@@ -1,0 +1,30 @@
+name: Keep Repo Active
+
+on:
+  schedule:
+    # 每月1号和15号的凌晨执行，这个频率足以保持仓库活跃
+    - cron: '0 0 1,15 * *'
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    # 权限设置：必须要有写入权限才能推送提交
+    permissions:
+      contents: write
+    steps:
+      # 步骤1: 检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 步骤2: 创建空提交并推送
+      - name: Create empty commit and push
+        run: |
+          # 设置 git 提交者的身份
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 执行空提交
+          git commit --allow-empty -m "chore: keep repo active"
+          
+          # 推送到远程仓库
+          git push
